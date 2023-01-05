@@ -58,8 +58,15 @@ SELECT `school_db_student`.`id`,
 # Order the data by highest GPAs first (descending).
 # Print out each student's full name and gpa to the terminal
 def problem_one(request):
+  students = Student.objects.filter(gpa__gt=3.0)
+  ordered_students = students.order_by('-gpa')
 
-    return complete(request)
+  for student in ordered_students:
+    print(f'Full Name{student.first_name} {student.last_name}: GPA: {student.gpa}')
+    # students = Student.objects.order_by('-gpa')
+  
+  return complete(request)
+
 
 
 # Supporting Query Method Documentation:
@@ -97,8 +104,12 @@ SELECT `school_db_student`.`id`,
 # Order by hire date ascending
 # Print out the instructor's full name and hire date to the terminal
 def problem_two(request):
+  instructors = Instructor.objects.filter(hire_date__lt='2010-01-01')
+  ordered_instructors = instructors.order_by('hire_date')
 
-    return complete(request)
+  for intructor in ordered_instructors:
+    print(f'Full Name: {intructor.first_name} {intructor.last_name}\nHire Date: {intructor.hire_date}\n')
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -138,8 +149,16 @@ SELECT `school_db_instructor`.`id`,
 # Print the instructors name and courses that he belongs to in the terminal
 # (Do not hard code his name in the print)
 def problem_three(request):
+  courses = Course.objects.filter(instructor_id=2)
+  instructors = Instructor.objects.filter(id=2)
 
-    return complete(request)
+  for instructor in instructors:
+    print(f'Instructor Name: {instructor.first_name} {instructor.last_name}\nCourses:')
+
+  for course in courses:
+    print(f'-{course.name}')
+
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -184,8 +203,13 @@ SELECT `school_db_instructor`.`id`,
 
 # Get the count of students, courses, and instructors and print them in the terminal
 def problem_four(request):
-
-    return complete(request)
+  student_count = Student.objects.all().count()
+  course_count = Course.objects.all().count()
+  instructor_count = Instructor.objects.all().count()
+  print(f'Students Count: {student_count}')
+  print(f'Courses Count: {course_count}')
+  print(f'Instructors Count: {instructor_count}')
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -228,8 +252,9 @@ SELECT COUNT(*) AS `__count`
 # Print the new student's id, full name, year, and gpa to the terminal
 # NOTE every time you execute this function a duplicate student will be created with a different primary key number
 def problem_five(request):
-
-    return complete(request)
+  new_student = Student.objects.create(first_name="Jack", last_name="Schuld", year=2000, gpa=1.0)
+  print(f'Id: {new_student.id}\nFull Name: {new_student.first_name} {new_student.last_name}\nYear: {new_student.year}\nGPA: {new_student.gpa}')
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -257,13 +282,14 @@ VALUES ('Kyle', 'Harwood', 9, 3.0)
 
 
 # Query the previoiusly created student by the id and update the "gpa" to a new value
-# Then query the studets table to get that student by their id
+# Then query the students table to get that student by their id
 # Print the new student's id, full name, and gpa to the terminal
 def problem_six(request):
-
-    # Make sure to set this equal to the primary key of the row you just created!
-    student_id = 11
-
+  # Make sure to set this equal to the primary key of the row you just created!
+    Student.objects.filter(id=11).update(gpa=0.5)
+    students = Student.objects.filter(id=11)
+    for student in students:
+      print(f'Id: {student.id}\nFull name: {student.first_name} {student.last_name}\nGPA: {student.gpa}')
     return complete(request)
 
 
@@ -313,6 +339,7 @@ def problem_seven(request):
 
     try:
         student = Student.objects.get(pk=student_id)
+        student.delete()
     except ObjectDoesNotExist:
         print('Great! It failed and couldnt find the object because we deleted it!')
 
